@@ -209,20 +209,20 @@ public class CoursesActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int counter = dataSnapshot.child("Seats Available").getValue(Integer.class);
-                if (counter > 0) {
-                    db_root.child("Users").child(uid).child("Courses").child("Winter")
-                            .child(course).setValue(true);
-                    Toast.makeText(getApplicationContext(), "Successfully " +
-                            "Enrolled in " + course, Toast.LENGTH_LONG).show();
 
-                    counter += add;
-                    courseSubDatabase.child("Seats Available").setValue(counter);
+                if (fallCourses.size()<5) {
+                    if (counter > 0) {
+                        db_root.child("Users").child(uid).child("Courses").child("Winter")
+                                .child(course).setValue(true);
+                        Toast.makeText(getApplicationContext(), "Successfully " +
+                                "Enrolled in " + course, Toast.LENGTH_LONG).show();
+
+                        counter += add;
+                        courseSubDatabase.child("Seats Available").setValue(counter);
+                    } else
+                        displayAlert(course, semester, "No seats available. Request override for ", "Course Full");
                 }
-                else displayAlert(course, semester, "No seats available. Request override for ", "Course Full");
-
-
-
-
+                else displayAlert(course, semester, "Course limit reached. Request override for ", "Course Max");
             }
 
             @Override
@@ -258,6 +258,11 @@ public class CoursesActivity extends AppCompatActivity {
                 }
                 else if (title.equals("Course Full")) {
                     db_root.child("Users").child(uid).child("Requests").child(semester).child("overrideFull").child(course).setValue(true);
+                    Toast.makeText(getApplicationContext(), "Override Requested for " + course,
+                            Toast.LENGTH_LONG).show();
+                }
+                else if (title.equals("Course Max")) {
+                    db_root.child("Users").child(uid).child("Requests").child(semester).child("courseLimit").setValue(true);
                     Toast.makeText(getApplicationContext(), "Override Requested for " + course,
                             Toast.LENGTH_LONG).show();
                 }
